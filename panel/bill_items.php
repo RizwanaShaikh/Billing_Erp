@@ -1,33 +1,16 @@
+<?php
+session_start();
 
-<!DOCTYPE html>
+error_reporting(E_ALL ^ E_NOTICE);  
+if ($_SESSION['b_id'] == NULL)
+{
+    echo "<script>window.location.href='customers.php';</script>";
+}
+?>
 <html lang="en">
 
 	<head>
 		<?php include 'header.php';?>
-
-		<script type="text/javascript">
-$(document).ready(function(){
-    $('.search-box input[type="text"]').on("keyup input", function(){
-        /* Get input value on change */
-        var inputVal = $(this).val();
-        var resultDropdown = $(this).siblings(".result");
-        if(inputVal.length){
-            $.get("controller/customers.php", {term: inputVal}).done(function(data){
-                // Display the returned data in browser
-                resultDropdown.html(data);
-            });
-        } else{
-            resultDropdown.empty();
-        }
-    });
-    
-    // Set search input value on click of result item
-    $(document).on("click", ".result p", function(){
-        $(this).parents(".search-box").find('input[type="text"]').val($(this).text());
-        $(this).parent(".result").empty();
-    });
-});
-</script>
 
 	</head>
 
@@ -124,59 +107,62 @@ $(document).ready(function(){
 							</h1>
 						</div><!-- /.page-header -->
 
+						<form action="controller/bill.php" method="post">					
 						<div class="row"> 
 							<div class="col-xs-12">
 								<!-- PAGE CONTENT BEGINS -->
-													
+								
 								<div class="row">
 									<div class="container">
 									<?php
-									$sql = "SELECT * FROM customer as c join bill as b on c.c_id = b.c_id where 	c.c_name= '".$_SESSION['c_name']."' and c.status = 1";
-											$result = $con->query($sql);
-										if ($result->num_rows > 0) 
+
+										$sql = "select c.*,b.* from customer as c join bill as b on c.c_id=b.c_id where b.b_id = ".$_SESSION['b_id']." and c.status = 1;";
+										
+										
+										$result = $con->query($sql);
+
+											if ($result->num_rows > 0) 
 											{
 											    // output data of each row
 									    		while($row = $result->fetch_assoc()) 
 									    		{
 
-									;
 									?>
-									<form action="controller/products.php" method="post">
+									
 										<div class="col-xs-6">
 											<div class="form-group">
 										    <label for="c_name">Invoice No : </label>
 										    <input type="text" value="<?php echo  $row['b_invoice'];?> " class="form-control" name="c_name" disabled>
 										  </div>
-											<div class="form-group">
-										    <label for="c_name">Customer / Company Name : </label>
-										    <input type="text" value="<?php echo  $row['c_name']?>" class="form-control" name="c_name" disabled>
-										  </div>
-										  
 										  <div class="form-group">
-										    <label for="c_address">Address : </label>
-										    <input type="text" class="form-control" name="c_address" value="<?php echo  $row['c_address']?>" disabled>
+										    <label for="c_deliv_add">Delivery Address : </label>
+										    <input type="text" class="form-control" name="c_deliv_add" value="<?php echo  $row['c_deliv_add']?>" disabled>
 										  </div>
-										  
+										  <div class="form-group">
+										    <label for="b_lr_no">LR-RR No : </label>
+										    <input type="text" class="form-control" name="b_lr_no" required>
+										  </div>
+										  <input type="hidden" class="form-control" name="b_id" value="<?php echo  $row['b_id']?>">
 										</div>
 										<div class="col-xs-6">
 											<div class="form-group">
-										    <label for="c_name">Date : </label>
-										    <input type="text" value="<?php echo  $row['b_date']?>" class="form-control" name="c_name" disabled>
-										  </div>
-											<div class="form-group">
-										    <label for="c_mob">Mobile No. : </label>
-										    <input type="text" class="form-control" name="c_mob" value="<?php echo  $row['c_mob']?>" disabled>
+										    <label for="c_name">Customer / Company Name : </label>
+										    <input type="text" value="<?php echo  $row['c_name']?>" class="form-control" name="c_name" disabled>
 										  </div>
 										  <div class="form-group">
 										    <label for="c_gst_no">GST No. : </label>
 										    <input type="text" class="form-control" name="c_gst_no" value="<?php echo  $row['c_gst_no']?>" disabled>
 										  </div>
+										  <div class="form-group">
+										    <label for="b_veh_no">Vehical No : </label>
+										    <input type="text" class="form-control" name="b_veh_no" required>
+										  </div>
 										</div>
-									</form> 
+									
+								
 								<?php
-
+										}
 									}
-											}
 								?>
 									</div>
 								</div>
@@ -209,7 +195,7 @@ $(document).ready(function(){
 														<th>Rate</th>	
 														<th>Amount</th>
 
-														<th></th>
+														
 														<th></th>
 													</tr>
 												</thead>
@@ -275,15 +261,26 @@ $(document).ready(function(){
 												</tbody>
 											</table>
 										</div>
+										<center>
+
+											
+											<button style="margin-top: 3%" type="submit" name="final_bill" class="btn btn-primary">Print</button>
+
+										</center>
 										</div>
 									</div>
 								</div>
-
-
-
+							
 								<!-- PAGE CONTENT ENDS -->
 							</div><!-- /.col -->
 						</div><!-- /.row -->
+				</form>
+				<div class="container">
+				<form method="post" action="controller/bill.php">
+					<input type="hidden" value="<?php echo $_SESSION['b_id']?>" name="b_id">
+					<button type="submit" name="cancel_bill" class="btn btn-danger" style="float: right;">Cancel</button>
+				</form>
+				</div>
 					</div><!-- /.page-content -->
 				</div>
 			</div><!-- /.main-content -->
@@ -311,7 +308,7 @@ $(document).ready(function(){
 		    <label for="p_id">Product Name : </label>
 		    <select class="form-control" name="p_id">
 		    <?php
-		    	$q = "select * from product";
+		    	$q = "select * from product where status = 1";
 		    	$r = $con->query($q);
 
 				if ($r->num_rows > 0) 
@@ -321,7 +318,7 @@ $(document).ready(function(){
 		    		{
 
 		    ?>
-		    <option value="<?php echo $ro['p_id']?>"> <?php echo $ro['p_name']?> - <?php echo $ro['p_num']?> </option>
+		    <option value="<?php echo $ro['p_id']?>"> <?php echo $ro['p_name']?> - <?php echo $ro['p_num']?> ( <?php echo $ro['p_qantity']?> ) </option>
 		    <?php
 		    		}
 		    	}

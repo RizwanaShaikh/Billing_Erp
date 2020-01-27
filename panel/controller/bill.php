@@ -1,23 +1,26 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
 session_start();
+
 require_once('../Db/dbconfig.php');
 	$cur_date = date("Y-m-d h:i:sa");
 
 	if(isset($_POST['gen_bill']))
     {
-        $c_name = $_POST['c_name'];
-        $_SESSION['c_name'] = $c_name;
-        $query = "select * from customer where c_name = '".$_SESSION['c_name']."'";
+        if(isset($_SESSION['b_id']))
+        {
+            echo "<script>alert('cancel or complete Previous Bill');window.location.href='../bill_items.php'; </script>";
+        }
+        else
+        {
+        $c_id = $_POST['c_id'];
+        $query = "select * from customer where c_id = '".$_SESSION['c_id']."'";
         $query_run = mysqli_query($con, $query);
         if(@mysqli_num_rows($query_run)>0)
         {
             $row = mysqli_fetch_array($query_run, MYSQLI_ASSOC);
-            $c_id = $row['c_id'];
-            $b_invoice = 'PCPL/'.date("Ymd").'/'.rand(0,100);
-            echo $b_invoice;
-            $c_deliv_add = $row['c_deliv_add'];
-            $querys = "insert into bill(b_invoice,c_id,c_deliv_add,b_date,status) values ('".$b_invoice."',".$c_id.",'".$c_deliv_add."','".$cur_date."','Pending') ";
+            $b_invoice = 'PCPL/'.date("Ymd").'/'.rand(0,100);            
+            $querys = "insert into bill(b_invoice,c_id,b_date,status) values ('".$b_invoice."',".$c_id.",'".$cur_date."','Pending') ";
             $querysrun = mysqli_query($con, $querys);
             if($querysrun>0)
             {
@@ -31,10 +34,10 @@ require_once('../Db/dbconfig.php');
             }
             else
             {   
-                echo "<script>alert('Error While Registration Please Try Again'); window.location.href='../bill_items.php';</script>";
+                echo "<script>alert('Error While Generating Bill Please Try Again'); window.location.href='../customer.php';</script>";
             }
         }
-        
+        }
         #echo "<script>window.location.href='../bill_items.php'; </script>";
     }
 
@@ -50,7 +53,7 @@ require_once('../Db/dbconfig.php');
         $r = mysqli_fetch_array($q_run, MYSQLI_ASSOC);
         $p_qt = $r['p_qantity']; 
 
-        if($p_qantity <= $p_qt)
+        if($p_qantity < $p_qt)
         {
             $n_qt = $p_qt - $p_qantity;
             $querys = "update product set p_qantity = ".$n_qt." where p_id = ".$p_id;
@@ -96,7 +99,7 @@ require_once('../Db/dbconfig.php');
         $querysrun = mysqli_query($con, $querys);
         if($querysrun>0)
         {
-            $q2 = "update bill_items set status = 0";
+            $q2 = "update bill_items set status = 0 where bi_id = ".$bi_id;
         
             $qr = mysqli_query($con, $q2);
             if($qr>0)
@@ -108,4 +111,46 @@ require_once('../Db/dbconfig.php');
 
     }
 
+
+    if(isset($_POST['final_bill']))
+    {
+        $bi_id = $_POST['bi_id'];
+        $b_id = $_POST['b_id'];
+        $b_lr_no = $_POST['b_lr_no'];
+        $b_veh_no = $_POST['b_veh_no'];
+
+        $sql = "select sum(p_amount) from bill_items where status = 1 and b_id =".$b_id.";";
+        $result = $con->query($sql);
+        $r = mysqli_fetch_array($result, MYSQLI_ASSOC);
+        $p_amount = $r['sum(p_amount)']; 
+        $b_amount = $p_amount + ($p_amount * 0.18);
+
+        $sql_1 = "update bill set b_lr_no = '".$b_lr_no."', b_veh_no = '".$b_veh_no."',b_amount = ".$b_amount.", status = 'completed' where b_id = ".$b_id.";";
+        echo $sql_1;
+        $querysrun = mysqli_query($con, $sql_1);
+        if($querysrun>0)
+            {
+                unset($_SESSION['b_id']);
+                echo "<script>window.location.href='../customers.php'; </script>";
+            }
+    }
+
+
+    if(isset($_POST['cancel_bill']))
+    {
+        $b_id = $_POST['b_id'];
+        $sql = "delete from bill_items where b_id = ".$b_id;
+        if ($con->query($sql) === TRUE) 
+        {
+            $sql_1 = "delete from bill where b_id = ".$b_id;
+            if ($con->query($sql_1) === TRUE) 
+            {
+                unset($_SESSION['b_id']);
+                echo "<script>window.location.href='../customers.php'; </script>";
+            }
+        } else 
+        {
+            echo "Error deleting record Bill items : " . $con->error;
+        } 
+    }
 ?>

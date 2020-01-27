@@ -5,29 +5,7 @@
 	<head>
 		<?php include 'header.php';?>
 
-		<script type="text/javascript">
-$(document).ready(function(){
-    $('.search-box input[type="text"]').on("keyup input", function(){
-        /* Get input value on change */
-        var inputVal = $(this).val();
-        var resultDropdown = $(this).siblings(".result");
-        if(inputVal.length){
-            $.get("controller/customers.php", {term: inputVal}).done(function(data){
-                // Display the returned data in browser
-                resultDropdown.html(data);
-            });
-        } else{
-            resultDropdown.empty();
-        }
-    });
-    
-    // Set search input value on click of result item
-    $(document).on("click", ".result p", function(){
-        $(this).parents(".search-box").find('input[type="text"]').val($(this).text());
-        $(this).parent(".result").empty();
-    });
-});
-</script>
+		
 
 	</head>
 
@@ -129,26 +107,89 @@ $(document).ready(function(){
 								<!-- PAGE CONTENT BEGINS -->
 													
 								<div class="row">
-									<div class="container">
-										
-
-									<form action="controller/bill.php" method="post">
-										<div class="col-sm-6">
-											<div class="form-group">
-										    
-										    <div class="search-box">
-									        Customer Name : <input type="text" autocomplete="off" placeholder="Search Customer..." class="form-control" name="c_name" />
-									        <div class="dropdown result"></div>
-									    	</div>
-										  </div>
+									<div class="col-xs-12">
+										<div class="clearfix">
+											<a type="button" class="btn btn-success" href="customers.php">Add New</a>
+											<div class="pull-right tableTools-container"></div>
 										</div>
-										<div class="col-sm-6" style="padding: 1%">
-											<button type="submit" name="gen_bill" class="btn btn-default">Submit</button>
+										<div class="table-header">
+											Results for "All Bills"
 										</div>
-										  
-										  
-										</form>
 
+										<!-- div.table-responsive -->
+
+										<!-- div.dataTables_borderWrap -->
+										<div>
+											<table id="dynamic-table" class="table table-striped table-bordered table-hover">
+												<thead>
+													<tr>
+														<th>Invoice No</th>
+														<th>Customer Name</th>
+														<th>Date</th>
+														<th>Amount</th>
+														<th>L-R No</th>	
+														<th>Vehical No</th>
+														<th></th>
+													</tr>
+												</thead>
+								
+												<tbody>
+
+
+										<?php 
+											$sql = "SELECT c.*,b.* FROM customer as c join bill as b on c.c_id = b.c_id where c.status = 1 and b.status = 'Completed'";
+											$result = $con->query($sql);
+
+											if ($result->num_rows > 0) 
+											{
+											    // output data of each row
+									    		while($row = $result->fetch_assoc()) 
+									    		{
+										?>
+
+													<tr>
+
+														<td>
+															<p><?php echo $row['b_invoice']?></p>
+															<p style="display: none"><?php echo $row['b_id']?></p>
+														</td>
+														<td>
+															<p><?php echo $row['c_name']?></p>
+														</td>
+														<td>
+															<p><?php echo $row['b_date']?></p>
+														</td>
+														<td>
+															<p><?php echo $row['b_amount']?></p>
+														</td>
+														<td>
+															<p><?php echo $row['b_lr_no']?></p>
+														</td>
+														<td>
+															<p><?php echo $row['b_veh_no']?></p>
+														</td>
+														<td>
+															<div class="hidden-sm hidden-xs action-buttons col-sm-4">
+																	<button type="button" class="btn btn-primary editbtn"  data-toggle="tooltip" data-placement="bottom" title="Details"><i class="ace-icon fa fa-info bigger-130"></i></button>
+															</div>
+
+
+															<div class="hidden-sm hidden-xs action-buttons col-sm-4">
+																	<a href="PDF/bill_gen.php?b_id=<?php echo $row['b_id']?>" name="gen_bill" class="btn btn-success" data-toggle="tooltip" data-placement="bottom" title="Print Bill"><i class="ace-icon fa fa-print bigger-130"></i></a>
+															</div>
+														</td>
+													</tr>
+
+										<?php
+												}
+											}
+
+										?>
+
+	
+												</tbody>
+											</table>
+										</div>
 									</div>
 								</div>
 
@@ -167,64 +208,15 @@ $(document).ready(function(){
 			
 	</body>
 </html>
-<!-- New Customer Modal -->
-<div id="new_cust" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">New Product</h4>
-      </div>
-      <div class="modal-body">
-
-		<form action="controller/products.php" method="post">
-		  <div class="form-group">
-		    <label for="p_name">Product Name : </label>
-		    <input type="text" class="form-control" name="p_name" required>
-		  </div>
-		  <div class="form-group">
-		    <label for="p_num">Product No. : </label>
-		    <input type="text" class="form-control" name="p_num" required>
-		  </div>
-		  <div class="form-group">
-		    <label for="p_qantity">Qantity : </label>
-		    <input type="text" class="form-control" name="p_qantity" required>
-		  </div>
-		  <!-- <div class="form-group">
-		  	 <div class="dropdown">
-				  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
-				  <span class="caret"></span></button>
-				  <ul class="dropdown-menu">
-				    <li><a href="#">HTML</a></li>
-				    <li><a href="#">CSS</a></li>
-				    <li><a href="#">JavaScript</a></li>
-				  </ul>
-				</div> 
-		  </div> -->
-		  <div class="form-group">
-		    <label for="p_qnt_type">Quantity Type : </label>
-		    <input type="text" class="form-control" name="p_qnt_type" required>
-		  </div>
-		  <button type="submit" name="new_pro" class="btn btn-default">Submit</button>
-		</form> 
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
 
 
 <script type="text/javascript">
+	$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
 	$(document).ready(function(){
 		$('.editbtn').on('click',function() {
-			$('#update_cust').modal('show');
+			$('#detail_bill').modal('show');
 
 			$tr = $(this).closest('tr');
 
@@ -234,46 +226,51 @@ $(document).ready(function(){
 
 			console.log(data);
 
-			$('#p_name').val(data[1].trim());
-			$('#p_num').val(data[2].trim());
-			$('#p_qantity').val(data[3].trim());
-			$('#p_qnt_type').val(data[4].trim());
-			$('#p_id').val(data[5].trim());
+			$('#c_id').val(data[0].trim());
+			$('#c_name').val(data[1].trim());
+			$('#c_address').val(data[2].trim());
+			$('#c_deliv_add').val(data[3].trim());
+			$('#c_mob').val(data[4].trim());
+			$('#c_gst_no').val(data[5].trim());
 
 		});
 	});
 </script>
 
 <!-- Update Customer Modal -->
-<div id="update_cust" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true"> 
+<div id="detail_bill" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true"> 
   <div class="modal-dialog">
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Update Product</h4>
+        <h4 class="modal-title">Details</h4>
       </div>
       <div class="modal-body">
        
-		<form action="controller/products.php" method="post">
+		<form action="controller/customers.php" method="post">
 		  <div class="form-group">
-		    <label for="p_name">Product Name : </label>
-		    <input type="text" class="form-control" name="p_name" id="p_name" required>
+		    <label for="c_name">Customer / Company Name : </label>
+		    <input type="text" class="form-control" name="c_name" id="c_name" required>
 		  </div>
 		  <div class="form-group">
-		    <label for="p_num">Product No. : </label>
-		    <input type="text" class="form-control" name="p_num" id="p_num" required>
+		    <label for="c_mob">Mobile No. : </label>
+		    <input type="text" class="form-control" name="c_mob" id="c_mob" required>
 		  </div>
 		  <div class="form-group">
-		    <label for="p_qantity">Qantity : </label>
-		    <input type="text" class="form-control" name="p_qantity" id="p_qantity" required>
+		    <label for="c_address">Address : </label>
+		    <input type="text" class="form-control" name="c_address" id="c_address" required>
 		  </div>
 		  <div class="form-group">
-		    <label for="p_qnt_type">Quantity Type. : </label>
-		    <input type="text" class="form-control" name="p_qnt_type" id="p_qnt_type" required>
+		    <label for="c_deliv_add">Delivery Address : </label>
+		    <input type="text" class="form-control" id="c_deliv_add" name="c_deliv_add" required>
 		  </div>
-		  <input type="hidden" name="p_id" id="p_id">
-		  <button type="submit" name="update_pro" class="btn btn-default">Submit</button>
+		  <div class="form-group">
+		    <label for="c_gst_no">GST No. : </label>
+		    <input type="text" class="form-control" name="c_gst_no" id="c_gst_no" required>
+		  </div>
+		  <input type="hidden" name="c_id" id="c_id">
+		  <button type="submit" name="update_cust" class="btn btn-default">Submit</button>
 		</form> 
 
       </div>

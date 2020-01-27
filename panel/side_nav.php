@@ -45,7 +45,7 @@
 					
 
 					<li class="">
-						<a href="new_bill.php">
+						<a href="bills.php">
 							<i class="menu-icon fa fa-file-text"></i>
 							<span class="menu-text"> Bill </span>
 						</a>
@@ -70,7 +70,21 @@
 
 						<b class="arrow"></b>
 					</li>
+<?php
+if (isset($_SESSION['b_id']))
+{
+	?>
+				<li class="">
+						<a href="bill_items.php">
+							<i class="menu-icon fa fa-file-text"></i>
+							<span class="menu-text"> Pending Bill </span>
+						</a>
 
+						<b class="arrow"></b>
+					</li>
+<?php
+}
+?>
 
 
 					

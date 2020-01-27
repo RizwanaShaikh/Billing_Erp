@@ -3,6 +3,9 @@ date_default_timezone_set("Asia/Kolkata");
 
 require_once('../Db/dbconfig.php');
 	$cur_date = date("Y-m-d h:i:sa");
+
+
+    // New Customerw
 	if(isset($_POST['new_cust']))
     {
         $c_name = $_POST['c_name'];
@@ -34,9 +37,12 @@ require_once('../Db/dbconfig.php');
         }
     }
 
+
+
+    // Delete Customer
     if (isset($_POST['delete_cust'])) 
     {
-    	echo "string";
+    	
     	$c_id = $_POST['c_id'];
     	$query = "update customer set status = 0, deleted_at = '".$cur_date."' where c_id=".$c_id;
         $querysrun = mysqli_query($con, $query);
@@ -47,6 +53,7 @@ require_once('../Db/dbconfig.php');
     }
 
 
+    // Update Customer
     if(isset($_POST['update_cust']))
     {
     	$c_id = $_POST['c_id'];

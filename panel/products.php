@@ -106,7 +106,7 @@
 								<div class="row">
 									<div class="col-xs-12">
 										<div class="clearfix">
-											<button type="button" class="btn btn-success" data-toggle="modal" data-target="#new_cust">Add New</button>
+											<button type="button" class="btn btn-success" data-toggle="modal" data-target="#new_pro">Add New</button>
 											<div class="pull-right tableTools-container"></div>
 										</div>
 										<div class="table-header">
@@ -184,7 +184,7 @@
 															<div class="hidden-sm hidden-xs action-buttons ">
 																<form action="controller/products.php" method="post">
 																	<input type="hidden" name="p_id" value="<?php echo $row['p_id']?>">
-																	<button type="submit" name="delete_cust" class="btn btn-danger"><i class="ace-icon fa fa-trash-o bigger-130"></i></button>
+																	<button type="submit" name="delete_pro" class="btn btn-danger"><i class="ace-icon fa fa-trash-o bigger-130"></i></button>
 																</form>
 																
 															</div>
@@ -216,8 +216,8 @@
 			
 	</body>
 </html>
-<!-- New Customer Modal -->
-<div id="new_cust" class="modal fade" role="dialog">
+<!-- New Product Modal -->
+<div id="new_pro" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
@@ -241,17 +241,6 @@
 		    <label for="p_qantity">Qantity : </label>
 		    <input type="text" class="form-control" name="p_qantity" required>
 		  </div>
-		  <!-- <div class="form-group">
-		  	 <div class="dropdown">
-				  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
-				  <span class="caret"></span></button>
-				  <ul class="dropdown-menu">
-				    <li><a href="#">HTML</a></li>
-				    <li><a href="#">CSS</a></li>
-				    <li><a href="#">JavaScript</a></li>
-				  </ul>
-				</div> 
-		  </div> -->
 		  <div class="form-group">
 		    <label for="p_qnt_type">Quantity Type : </label>
 		    <input type="text" class="form-control" name="p_qnt_type" required>
@@ -273,7 +262,7 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('.editbtn').on('click',function() {
-			$('#update_cust').modal('show');
+			$('#update_pro').modal('show');
 
 			$tr = $(this).closest('tr');
 
@@ -293,8 +282,8 @@
 	});
 </script>
 
-<!-- Update Customer Modal -->
-<div id="update_cust" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true"> 
+<!-- Update Product Modal -->
+<div id="update_pro" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true"> 
   <div class="modal-dialog">
     <!-- Modal content-->
     <div class="modal-content">

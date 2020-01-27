@@ -8,6 +8,8 @@ if ($_SESSION['user_name'] == NULL)
 }
 
 
+
+
 	require_once('Db/dbconfig.php');
     $query = "select name from admin where email = '".$_SESSION['user_name']."'";
     $query_run = mysqli_query($con, $query);

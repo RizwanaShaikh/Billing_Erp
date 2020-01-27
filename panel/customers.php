@@ -110,7 +110,7 @@
 											<div class="pull-right tableTools-container"></div>
 										</div>
 										<div class="table-header">
-											Results for "All Cutomers"
+											Results for "All Customers"
 										</div>
 
 										<!-- div.table-responsive -->
@@ -127,10 +127,10 @@
 															</label>
 														</th>
 														<th>Name</th>
-														<th>Mobile No.</th>
 														<th>Address</th>
-														<th>GST No.</th>	
-														<th style="display: none;">Id</th>
+														<th>Delivery Address</th>
+														<th>Mobile</th>
+														<th>GST No</th>	
 														<th></th>
 													</tr>
 												</thead>
@@ -149,44 +149,48 @@
 									    		{
 										?>
 
-													<tr >
+													<tr>
 														<td class="center">
 															<label class="pos-rel">
 																<input type="checkbox" class="ace" />
 																<span class="lbl"></span>
 															</label>
+															<p style="display: none"><?php echo $row['c_id']?></p>
 														</td>
 
-														<td >
-															<p><?php echo $row['c_name']?></p>
-														</td>
 														<td>
-															<p><?php echo $row['c_mob']?></p>
+															<p><?php echo $row['c_name']?></p>
 														</td>
 														<td>
 															<p><?php echo $row['c_address']?></p>
 														</td>
 														<td>
+															<p><?php echo $row['c_deliv_add']?></p>
+														</td>
+														<td>
+															<p><?php echo $row['c_mob']?></p>
+														</td>
+														<td>
 															<p><?php echo $row['c_gst_no']?></p>
 														</td>
-														
-														<td style="display: none;">
-															<p><?php echo $row['c_id']?></p>
-														</td>
-
 														<td>
-															<div class="hidden-sm hidden-xs action-buttons col-sm-6">
-																	<button type="button" class="btn btn-success editbtn"><i class="ace-icon fa fa-pencil bigger-130"></i></button>
-																
 
+															<div class="hidden-sm hidden-xs action-buttons col-sm-4">
+																	<form action="controller/bill.php" method="post">
+																	<input type="hidden" name="c_id" value="<?php echo $row['c_id']?>">
+																	<button type="submit" name="gen_bill" class="btn btn-success" data-toggle="tooltip" data-placement="bottom" title="Generate Bill"><i class="ace-icon fa fa-file-text-o bigger-130"></i></button>
+																</form>
+															</div>
+
+															<div class="hidden-sm hidden-xs action-buttons col-sm-4">
+																	<button type="button" class="btn btn-primary editbtn"  data-toggle="tooltip" data-placement="bottom" title="Update"><i class="ace-icon fa fa-pencil bigger-130"></i></button>
 															</div>
 
 															<div class="hidden-sm hidden-xs action-buttons ">
 																<form action="controller/customers.php" method="post">
 																	<input type="hidden" name="c_id" value="<?php echo $row['c_id']?>">
-																	<button type="submit" name="delete_cust" class="btn btn-danger"><i class="ace-icon fa fa-trash-o bigger-130"></i></button>
+																	<button type="submit" name="delete_cust" class="btn btn-danger"  data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="ace-icon fa fa-trash-o bigger-130"></i></button>
 																</form>
-																
 															</div>
 														</td>
 													</tr>
@@ -206,11 +210,14 @@
 								<!-- PAGE CONTENT ENDS -->
 							</div><!-- /.col -->
 						</div><!-- /.row -->
-					</div><!-- /.page-content -->
-				</div>
-			</div><!-- /.main-content -->
 
-			<?php include 'footer.php';?>
+
+					</div>	<!-- PAGE CONTENT ENDS -->
+				</div><!-- /.page-content -->
+			
+			</div><!-- /.main-content -->
+		</div>
+		<?php include 'footer.php';?>
 
 
 			
@@ -264,6 +271,9 @@
 
 
 <script type="text/javascript">
+	$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
 	$(document).ready(function(){
 		$('.editbtn').on('click',function() {
 			$('#update_cust').modal('show');
@@ -276,12 +286,12 @@
 
 			console.log(data);
 
+			$('#c_id').val(data[0].trim());
 			$('#c_name').val(data[1].trim());
-			$('#c_mob').val(data[2].trim());
-			$('#c_address').val(data[3].trim());
-			$('#c_deliv_add').val(data[4].trim());
+			$('#c_address').val(data[2].trim());
+			$('#c_deliv_add').val(data[3].trim());
+			$('#c_mob').val(data[4].trim());
 			$('#c_gst_no').val(data[5].trim());
-			$('#c_id').val(data[6].trim());
 
 		});
 	});
@@ -313,7 +323,7 @@
 		  </div>
 		  <div class="form-group">
 		    <label for="c_deliv_add">Delivery Address : </label>
-		    <input type="text" class="form-control" name="c_deliv_add" required>
+		    <input type="text" class="form-control" id="c_deliv_add" name="c_deliv_add" required>
 		  </div>
 		  <div class="form-group">
 		    <label for="c_gst_no">GST No. : </label>
